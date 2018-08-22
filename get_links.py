@@ -10,6 +10,7 @@ from selenium.common.exceptions import ElementNotVisibleException as NotVisible
 MAIN_PAGE = 'https://shop.miratorg.ru/'
 PATH = 'D:\python\miratorg\\'
 
+
 class Parser:
     def __init__(self):
         self.driver = webdriver.Chrome()
@@ -17,9 +18,9 @@ class Parser:
         self.categories = []
         self.hrefs = []
 
-
     def get_categories(self):
-        lis = self.driver.find_element_by_xpath('//nav[@class="menu-item first"]').find_elements_by_tag_name('li')
+        lis = self.driver.find_element_by_xpath(
+            '//nav[@class="menu-item first"]').find_elements_by_tag_name('li')
         lis = lis[:-1]
 
         print(len(lis))
@@ -32,38 +33,37 @@ class Parser:
             else:
                 pass
 
-
-
-
     def get_links(self, category):
         self.driver.get(category)
         self.open_all_page()
         self.find_products()
         for product in self.products:
             self.get_link(product)
-        filename = category.split('/')[-2]
-        if (filename+'.txt') not in os.listdir(PATH+'txt/'):
-            with open(PATH+'txt/'+filename+'.txt', 'w') as file:
+        # filename = category.split('/')[-2]
+        if ('miratorg' + '.txt') not in os.listdir(PATH + 'txt/'):
+            with open(PATH + 'txt/' + 'miratorg' + '.txt', 'w') as file:
                 for link in self.hrefs:
-                    file.write(link+'\n')
+                    file.write(link + '\n')
         else:
-            with open(PATH+'txt/'+filename+'.txt', 'a') as file:
+            with open(PATH + 'txt/' + 'miratorg' + '.txt', 'a') as file:
                 for link in self.hrefs:
-                    file.write(link+'\n')
+                    file.write(link + '\n')
 
         self.hrefs = []
 
-
-        #self.driver.find_element('data-entity', 'items-row')
+        # self.driver.find_element('data-entity', 'items-row')
 
     def open_all_page(self):
         multipl = 1
         while True:
-            self.driver.execute_script("window.scrollTo(0, {})".format(3000 * multipl))
+            self.driver.execute_script(
+                "window.scrollTo(0, {})".format(3000 * multipl))
             try:
-                shows = self.driver.find_elements_by_xpath('//a[@data-use="show-more-2"]')
+                shows = self.driver.find_elements_by_xpath(
+                    '//a[@data-use="show-more-2"]')
                 if len(shows) > 0:
-                    self.driver.find_element_by_xpath('//a[@data-use="show-more-2"]').click()
+                    self.driver.find_element_by_xpath(
+                        '//a[@data-use="show-more-2"]').click()
                     multipl *= 2
                     time.sleep(1)
                 else:
@@ -72,16 +72,20 @@ class Parser:
                 pass
 
     def find_products(self):
-        self.products = self.driver.find_elements_by_xpath('//div[@class="cat-item product-block-js"]')
+        self.products = self.driver.find_elements_by_xpath(
+            '//div[@class="cat-item product-block-js"]')
 
     def get_link(self, product):
-        href = product.find_element_by_class_name('card-link-js').get_attribute('href')
+        href = product.find_element_by_class_name(
+            'card-link-js').get_attribute('href')
         self.hrefs.append(href)
 
     def start(self):
         self.get_categories()
         for category in self.categories:
             self.get_links(category)
+
+
 
 parser = Parser()
 parser.start()
